@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">eCOA_POC</string>
+    <string name="back_head">Back Head</string>
+
 </resources>
