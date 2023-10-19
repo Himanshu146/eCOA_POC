@@ -1,20 +1,31 @@
 package com.example.ecoa_poc
 
+
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import com.example.svgpath.util.NewZoomableImageView
 import com.richpath.SVGPath
 import com.richpath.SVGPathView
+
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        var previousSVGPath:SVGPath? = null
+
+//        val touch = findViewById<View>(R.id.view) as NewZoomableImageView
+//        touch.setImageResource(R.drawable.human)
+
+
+
+        var previousSVGPath: SVGPath? = null
 
 
         val androidRichPathView = findViewById<SVGPathView>(R.id.view)
+        androidRichPathView.setImageResource(R.drawable.human)
         var previousColor:Int =0
         androidRichPathView.onPathClickListener = object : SVGPath.OnPathClickListener {
             override fun onClick(svgPath: SVGPath) {
