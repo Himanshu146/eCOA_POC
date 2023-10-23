@@ -4,6 +4,7 @@ package com.example.ecoa_poc
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.svgpath.util.NewZoomableImageView
@@ -18,6 +19,7 @@ class MainActivity : AppCompatActivity() {
 
 //        val touch = findViewById<View>(R.id.view) as NewZoomableImageView
 //        touch.setImageResource(R.drawable.human)
+
 
 
 

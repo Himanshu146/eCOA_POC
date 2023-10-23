@@ -7,13 +7,15 @@ import android.graphics.Path
 import android.graphics.PointF
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.view.ScaleGestureDetector
 import android.view.View
+import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener
+import android.view.ScaleGestureDetector
+
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.IntRange
 import androidx.appcompat.widget.AppCompatImageView
 import com.example.svgpath.R
-import com.example.svgpath.util.NewZoomableImageView
 import com.richpath.pathparser.PathParser
 import com.richpath.model.Vector
 import org.xmlpull.v1.XmlPullParserException
@@ -30,7 +32,7 @@ class SVGPathView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : 
     private var SVGPathDrawable: SVGPathDrawable? = null
     var onPathClickListener: SVGPath.OnPathClickListener? = null
 
-    private var mode = NewZoomableImageView.NONE
+    private var mode = NONE
     private val matrix = Matrix()
     private val last = PointF()
     private val start = PointF()
@@ -47,9 +49,9 @@ class SVGPathView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : 
     private var mScaleDetector: ScaleGestureDetector? = null
 
 
-    private inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+    private inner class ScaleListener : SimpleOnScaleGestureListener() {
         override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
-            mode = NewZoomableImageView.ZOOM
+            mode = ZOOM
             return true
         }
 
@@ -82,6 +84,7 @@ class SVGPathView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : 
     }
 
     private fun init() {
+        super.setClickable(true);
         //Disable hardware
         setLayerType(View.LAYER_TYPE_SOFTWARE, null)
     }
@@ -175,14 +178,14 @@ class SVGPathView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : 
 
 //        val bmHeight = bmHeight
 //        val bmWidth = bmWidth
-//        val width = measuredWidth.toFloat()
-//        val height = measuredHeight.toFloat()
+////        val width = measuredWidth.toFloat()
+////        val height = measuredHeight.toFloat()
 //        //Fit to screen.
 //        val scale = if (width > height) height / bmHeight else width / bmWidth
-//        matrix.setScale(scale, scale)
+//        matrix.setScale(scale.toFloat(), scale.toFloat())
 //        saveScale = 1f
-//        originalBitmapWidth = scale * bmWidth
-//        originalBitmapHeight = scale * bmHeight
+//        originalBitmapWidth = scale.toFloat() * bmWidth
+//        originalBitmapHeight = scale.toFloat() * bmHeight
 //
 //        // Center the image
 //        redundantYSpace = height - originalBitmapHeight
@@ -190,7 +193,7 @@ class SVGPathView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : 
 //        matrix.postTranslate(redundantXSpace / 2, redundantYSpace / 2)
 //        imageMatrix = matrix
 //        //MUST CALL THIS
-//       // setMeasuredDimension(originalBitmapWidth, bmHeight)
+//        setMeasuredDimension(bmWidth, bmHeight)
     }
 
     fun findAllRichPaths(): Array<SVGPath> {
@@ -261,7 +264,6 @@ class SVGPathView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : 
 //        return true
 //    }
 
-
     override fun onTouchEvent(event: MotionEvent): Boolean {
         mScaleDetector!!.onTouchEvent(event)
         matrix.getValues(m)
@@ -272,18 +274,18 @@ class SVGPathView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : 
             MotionEvent.ACTION_DOWN -> {
                 last[event.x] = event.y
                 start.set(last)
-                mode = NewZoomableImageView.DRAG
+                mode = DRAG
             }
 
             MotionEvent.ACTION_POINTER_DOWN -> {
                 last[event.x] = event.y
                 start.set(last)
-                mode = NewZoomableImageView.ZOOM
+                mode = ZOOM
             }
 
             MotionEvent.ACTION_MOVE ->                 //if the mode is ZOOM or
                 //if the mode is DRAG and already zoomed
-                if (mode == NewZoomableImageView.ZOOM || mode == NewZoomableImageView.DRAG && saveScale > minScale) {
+                if (mode == ZOOM || mode == DRAG && saveScale > minScale) {
                     var deltaX = curr.x - last.x // x difference
                     var deltaY = curr.y - last.y // y difference
                     val scaleWidth = Math.round(originalBitmapWidth * saveScale)
@@ -330,13 +332,14 @@ class SVGPathView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : 
                 }
 
             MotionEvent.ACTION_UP -> {
-                mode = NewZoomableImageView.NONE
+                mode = NONE
                 val xDiff = Math.abs(curr.x - start.x).toInt()
                 val yDiff = Math.abs(curr.y - start.y).toInt()
-                if (xDiff < NewZoomableImageView.CLICK && yDiff < NewZoomableImageView.CLICK) performClick()
+                if (xDiff < CLICK && yDiff < CLICK) performClick()
+
             }
 
-            MotionEvent.ACTION_POINTER_UP -> mode = NewZoomableImageView.NONE
+            MotionEvent.ACTION_POINTER_UP -> mode = NONE
         }
 
         SVGPathDrawable?.getTouchedPath(event)?.let { richPath ->
