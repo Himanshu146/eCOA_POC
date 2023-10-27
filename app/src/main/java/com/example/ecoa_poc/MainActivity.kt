@@ -12,31 +12,44 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         var previousSVGPath:SVGPath? = null
+        var selectedSVGPath : ArrayList<SVGPath>? = arrayListOf()
 
 
         val androidRichPathView = findViewById<SVGPathView>(R.id.view)
         var previousColor:Int =0
         androidRichPathView.onPathClickListener = object : SVGPath.OnPathClickListener {
             override fun onClick(svgPath: SVGPath) {
-                if (svgPath.name !=null){
-                    if (previousSVGPath!=null){
-                        val storedObj =previousSVGPath!!.name?.let {
+                if (selectedSVGPath!=null && selectedSVGPath.size >1) {
+                    val index = selectedSVGPath.indexOfLast {
+                        it.name == svgPath?.name
+                    }
+
+                    if(index>-1){
+                        val storedObj =svgPath!!.name?.let {
                             androidRichPathView.findRichPathByName(it)
                         }
                         storedObj?.fillColor = previousColor
                         previousSVGPath = svgPath
                         previousColor = svgPath.fillColor
-                        svgPath.fillColor = Color.BLUE
+                        //svgPath.fillColor = Color.BLUE
+                        selectedSVGPath.removeAt(index)
                     }else{
                         previousColor = svgPath.fillColor
                         svgPath.fillColor= Color.BLUE
                         previousSVGPath = svgPath
+                        selectedSVGPath?.add(svgPath)
                     }
+                }else{
+                    selectedSVGPath?.add(svgPath)
+                    previousColor = svgPath.fillColor
+                        svgPath.fillColor= Color.BLUE
+                        previousSVGPath = svgPath
+                }
 
-                    getMapList().get(svgPath.name)?.let {
+                getMapList().get(svgPath.name)?.let {
                         setAlert(it.toString())
                     }
-                }
+
             }
         }
     }
